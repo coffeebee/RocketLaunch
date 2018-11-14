@@ -5,7 +5,8 @@ var net;
 var name;
 var countdown;
 var nextLaunchDate;
-doThis(0)
+
+window.onload = doThis(0);
 //getting the date 
 //var date = datestring.split(' ').slice(0,4).join(' ');
 
@@ -19,6 +20,7 @@ function doThis(num){
     }else if(num==3){
         httpRequest.open('GET', 'https://launchlibrary.net/1.4/launch?name=launcherone&next=5')
     }
+    clearInterval(countdown);
     httpRequest.send();
     httpRequest.onreadystatechange = aFunction;
 }
@@ -26,40 +28,39 @@ function aFunction(){
     if (httpRequest.readyState == 4){
         var launch = httpRequest.responseText;
         var jsLaunch = JSON.parse(launch);
-        //console.log(jsLaunch);
+        console.log(jsLaunch);
         //console.log(jsLaunch.launches[0]);
         //console.log(jsLaunch.launches[0].name);
         
         nextLaunchDate = (jsLaunch.launches[0].net).split(' ').slice(0, 3).join(' ')        
         document.getElementById("nextLaunch").innerHTML = "<p><strong>Next Launch:</strong> " + nextLaunchDate + "</p>";
         document.getElementById("listLaunches").innerHTML = ""; 
+
         //next 5 launches
-        for(i=0; i<5; i++){
+        for(i=0; i<jsLaunch.count; i++){
             net = jsLaunch.launches[i].net;
             name = jsLaunch.launches[i].name;
-            document.getElementById("listLaunches").innerHTML += "<p><strong>" + net + ":</strong> " + name + "</p>";
-        }
+                document.getElementById("listLaunches").innerHTML += "<p><strong>" + net + ":</strong> " + name + "</p>";
+        }        
+
         //countdown        
-        // I totally looked this up on w3schools
-        
-        var launchTime = (new Date(jsLaunch.launches[0].net)).getTime()
-        var current, count;
-        var days, hours, mins, secs;
-        setInterval(function(){            
+        // I totally looked this up on w3schools        
+        var launchTime; 
+        var current, count; 
+        var d, h, m, s;       
+        countdown = setInterval(function(){   
+            launchTime = (new Date(jsLaunch.launches[0].net)).getTime()               
             current = new Date().getTime()
             count = launchTime - current
-            console.log(launchTime);
-            console.log(current);
-            console.log(count);
-            days = Math.floor(count / (1000 * 60 * 60 * 24));
-            hours = Math.floor((count % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            mins = Math.floor((count % (1000 * 60 * 60)) / (1000 * 60));
-            secs = Math.floor((count % (1000 * 60)) / 1000);
-            document.getElementById("countdown").innerHTML = "<p><strong>Countdown to Launch: </strong>" + days + " Days: " + hours + " Hours: "
-        + mins + " Minutes " + secs + " Seconds " + "</p>";
+            //console.log(launchTime);
+            //console.log(current);
+            //console.log(count);
+            d = Math.floor(count / (1000 * 60 * 60 * 24));
+            h = Math.floor((count % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            m = Math.floor((count % (1000 * 60 * 60)) / (1000 * 60));
+            s = Math.floor((count % (1000 * 60)) / 1000);
+            document.getElementById("countdown").innerHTML = "<p><strong>Countdown to Launch: </strong>" + d + " Days: " + h + " Hours: "
+        + m + " Minutes " + s + " Seconds " + "</p>";
         }, 1000)
-        
-
-
     }
 }
